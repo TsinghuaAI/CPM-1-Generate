@@ -44,7 +44,7 @@ bash scripts/generate_text.sh /path/to/CPM
 
 ```
 @article{cpm-v1,
-  title={Large-scale Chinese Language Model with Generative Pre-training},
+  title={CPM: A Large-scale Generative Chinese Pre-trained Language Model},
   author={Zhang, Zhengyan and Han, Xu, and Zhou, Hao, and Ke, Pei, and Gu, Yuxian and Ye, Deming and Qin, Yujia and Su, Yusheng and Ji, Haozhe and Guan, Jian and Qi, Fanchao and Wang, Xiaozhi and Zheng, Yanan and Cao, Jiannan and Zeng, Guoyang and Cao, Huanqi and Chen, Shengqi and Li, Daixuan and Sun, Zhenbo and Liu, Zhiyuan and Huang, Minlie and Han, Wentao and Tang, Jie and Li, Juanzi and Sun, Maosong},
   year={2020}
 }

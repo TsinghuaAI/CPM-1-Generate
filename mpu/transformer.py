@@ -26,6 +26,8 @@ from .layers import ColumnParallelLinear
 from .layers import RowParallelLinear
 from .mappings import gather_from_model_parallel_region
 
+import deepspeed
+
 from .random import checkpoint
 from .random import get_cuda_rng_tracker
 
@@ -90,6 +92,11 @@ class GPT2ParallelSelfAttention(torch.nn.Module):
                                        init_method=output_layer_init_method)
         self.output_dropout = torch.nn.Dropout(output_dropout_prob)
 
+        if deepspeed.checkpointing.is_configured():
+            global get_cuda_rng_tracker, checkpoint
+            get_cuda_rng_tracker = deepspeed.checkpointing.get_cuda_rng_tracker
+            checkpoint = deepspeed.checkpointing.checkpoint
+
 
     def _transpose_for_scores(self, tensor):
         """Transpose a 3D tensor [b, s, np*hn] into a 4D tensor with
@@ -101,7 +108,7 @@ class GPT2ParallelSelfAttention(torch.nn.Module):
         tensor = tensor.view(*new_tensor_shape)
         return tensor.permute(0, 2, 1, 3)
 
-    def forward(self, hidden_states, ltor_mask):
+    def forward(self, hidden_states, ltor_mask, layer_past=None, use_cache=False):
         # hidden_states: [b, s, h]
         # ltor_mask: [1, 1, s, s]
 
@@ -111,11 +118,23 @@ class GPT2ParallelSelfAttention(torch.nn.Module):
          mixed_key_layer,
          mixed_value_layer) = split_tensor_along_last_dim(mixed_x_layer, 3)
 
+
         # Reshape and transpose [b, np, s, hn]
         query_layer = self._transpose_for_scores(mixed_query_layer)
         key_layer = self._transpose_for_scores(mixed_key_layer)
         value_layer = self._transpose_for_scores(mixed_value_layer)
 
+        if layer_past is not None:
+            past_key, past_value = layer_past[0], layer_past[1]
+            key_layer = torch.cat((past_key, key_layer), dim=-2).half()
+            value_layer = torch.cat((past_value, value_layer), dim=-2).half()
+        
+
+        if use_cache:
+            present = torch.stack((key_layer, value_layer))
+        else:
+            present = None
+        
         # Raw attention scores. [b, np, s, s]
         attention_scores = torch.matmul(query_layer,
                                         key_layer.transpose(-1, -2))
@@ -145,6 +164,8 @@ class GPT2ParallelSelfAttention(torch.nn.Module):
         # Output. [b, s, h]
         output = self.dense(context_layer)
         output = self.output_dropout(output)
+
+        output = [output, present]
 
         return output
 
@@ -271,14 +292,14 @@ class GPT2ParallelTransformerLayer(torch.nn.Module):
             init_method,
             output_layer_init_method=output_layer_init_method)
 
-    def forward(self, hidden_states, ltor_mask):
+    def forward(self, hidden_states, ltor_mask, layer_past=None, use_cache=False):
         # hidden_states: [b, s, h]
         # ltor_mask: [1, 1, s, s]
 
         # Layer norm at the begining of the transformer layer.
         layernorm_output = self.input_layernorm(hidden_states)
         # Self attention.
-        attention_output = self.attention(layernorm_output, ltor_mask)
+        attention_output, present = self.attention(layernorm_output, ltor_mask, layer_past=layer_past, use_cache=use_cache)
         # Residual connection.
         layernorm_input = hidden_states + attention_output
         # Layer norm post the self attention.
@@ -287,6 +308,8 @@ class GPT2ParallelTransformerLayer(torch.nn.Module):
         mlp_output = self.mlp(layernorm_output)
         # Second residual connection.
         output = layernorm_input + mlp_output
+
+        output = [output, present]
 
         return output
 
@@ -379,7 +402,13 @@ class GPT2ParallelTransformer(torch.nn.Module):
         # Final layer norm before output.
         self.final_layernorm = LayerNorm(hidden_size, eps=layernorm_epsilon)
 
-    def forward(self, hidden_states, attention_mask):
+        if deepspeed.checkpointing.is_configured():
+            global get_cuda_rng_tracker, checkpoint
+            get_cuda_rng_tracker = deepspeed.checkpointing.get_cuda_rng_tracker
+            checkpoint = deepspeed.checkpointing.checkpoint
+
+
+    def forward(self, hidden_states, attention_mask, past_key_values=None, use_cache=False):
 
         def custom(start, end):
             def custom_forward(*inputs):
@@ -390,6 +419,15 @@ class GPT2ParallelTransformer(torch.nn.Module):
                 return x_
             return custom_forward
 
+        if past_key_values is None:
+            past_length = 0
+            past_key_values = [None] * len(self.layers)
+        else:
+            past_length = past_key_values[0][0].size(-2)
+
+        presents = []
+        all_hidden_states = []
+
         if self.checkpoint_activations:
             l = 0
             num_layers = len(self.layers)
@@ -399,11 +437,17 @@ class GPT2ParallelTransformer(torch.nn.Module):
                                            hidden_states, attention_mask)
                 l += chunk_length
         else:
-            for layer in self.layers:
-                hidden_states = layer(hidden_states, attention_mask)
+            for i, (layer, layer_past) in enumerate(zip(self.layers, past_key_values)):
+                #all_hidden_states += [hidden_states,]
+                #all_hidden_states += [hidden_states.view(hidden_states.size()),]
+                hidden_states, present = layer(hidden_states, attention_mask, layer_past=layer_past, use_cache=use_cache)
+                if use_cache:
+                    presents += [present,]
 
         # Final layer norm.
         output = self.final_layernorm(hidden_states)
+
+        output = [output, presents]
 
         return output
 
@@ -458,6 +502,12 @@ class BertParallelSelfAttention(torch.nn.Module):
         # different outputs on different number of parallel partitions but
         # on average it should not be partition dependent.
         self.dropout = torch.nn.Dropout(dropout_prob)
+
+        if deepspeed.checkpointing.is_configured():
+            global get_cuda_rng_tracker, checkpoint
+            get_cuda_rng_tracker = deepspeed.checkpointing.get_cuda_rng_tracker
+            checkpoint = deepspeed.checkpointing.checkpoint
+
 
     def _transpose_for_scores(self, tensor):
         """Transpose a 3D tensor [b, s, np*hn] into a 4D tensor with

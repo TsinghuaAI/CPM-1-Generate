@@ -80,7 +80,7 @@ class GPT2Model(torch.nn.Module):
                                                        checkpoint_activations,
                                                        checkpoint_num_layers)
 
-    def forward(self, input_ids, position_ids, attention_mask):
+    def forward(self, input_ids, position_ids, attention_mask, past_key_values=None, use_cache=False):
 
         # Embeddings.
         words_embeddings = self.word_embeddings(input_ids)
@@ -91,7 +91,7 @@ class GPT2Model(torch.nn.Module):
         embeddings = self.embedding_dropout(embeddings)
 
         # Transformer.
-        transformer_output = self.transformer(embeddings, attention_mask)
+        transformer_output, presents = self.transformer(embeddings, attention_mask, past_key_values=past_key_values, use_cache=use_cache)
 
         # Parallel logits.
         transformer_output_parallel = mpu.copy_to_model_parallel_region(
@@ -100,9 +100,9 @@ class GPT2Model(torch.nn.Module):
                                    self.word_embeddings.weight)
 
         if self.parallel_output:
-            return logits_parallel
+            return logits_parallel, presents
 
-        return mpu.gather_from_model_parallel_region(logits_parallel)
+        return mpu.gather_from_model_parallel_region(logits_parallel), presents
 
 
 def gpt2_get_params_for_weight_decay_optimization(module):

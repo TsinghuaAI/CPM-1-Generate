@@ -101,7 +101,8 @@ def initialize_distributed(args):
     init_method = 'tcp://'
     master_ip = os.getenv('MASTER_ADDR', 'localhost')
     master_port = os.getenv('MASTER_PORT', '6000')
-    init_method += master_ip + ':' + master_port
+    #init_method += master_ip + ':' + master_port
+    init_method += master_ip + ':' + '12580'
     torch.distributed.init_process_group(
         backend=args.distributed_backend,
         world_size=args.world_size, rank=args.rank,
@@ -218,9 +219,14 @@ def generate_samples(model, tokenizer, args, device):
             counter = 0
             org_context_length = context_length
 
+            past_key_values = None
             while counter < (org_context_length + args.out_seq_length):
-                logits = model(tokens, position_ids, attention_mask)
-                logits = logits[:, context_length - 1, :] / args.temperature
+                if counter == 0:
+                    logits, past_key_values = model(tokens[:, :context_length], position_ids[:, :context_length], attention_mask[:, :, :context_length, :context_length], past_key_values=past_key_values, use_cache=True)
+                    logits = logits[:, context_length - 1, :]
+                else:
+                    logits, past_key_values = model(tokens[:, context_length - 1 : context_length], position_ids[:, context_length - 1 : context_length], attention_mask[:, :, context_length - 1, :context_length], past_key_values=past_key_values, use_cache=True)
+                    logits = logits[:, 0, :]
                 logits = top_k_logits(logits, top_k=args.top_k, top_p=args.top_p)            
                 log_probs = F.softmax(logits, dim=-1)
                 prev = torch.multinomial(log_probs, num_samples=1)

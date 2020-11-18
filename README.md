@@ -12,6 +12,8 @@ cd apex
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 ```
 
+注：感谢hqhuan同学提供了基于TensorFlow的[使用代码](https://github.com/qhduan/CPM-LM-TF2)。
+
 ## 模型
 
 模型下载后文件夹的目录结构需设置如下：

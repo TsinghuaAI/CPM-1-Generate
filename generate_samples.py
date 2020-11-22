@@ -172,10 +172,13 @@ def generate_samples(model, tokenizer, args, device):
             terminate_runs=0
 
             if mpu.get_model_parallel_rank() == 0:
-                raw_text = input("\nContext prompt (stop to exit) >>> ")
-                while not raw_text:
-                    print('Prompt should not be empty!')
+                if args.input_text:
+                    raw_text = open(args.input_text).read().strip()
+                else:
                     raw_text = input("\nContext prompt (stop to exit) >>> ")
+                    while not raw_text:
+                        print('Prompt should not be empty!')
+                        raw_text = input("\nContext prompt (stop to exit) >>> ")
            
                 if "stop" in raw_text:
                     terminate_runs = 1
@@ -263,6 +266,9 @@ def generate_samples(model, tokenizer, args, device):
 
             torch.distributed.barrier(group=mpu.get_model_parallel_group())
             context_count += 1
+
+            if args.input_text:
+                break
 
 def prepare_tokenizer(args):
 
@@ -357,7 +363,7 @@ def main():
     set_random_seed(args.seed)
 
     #get the tokenizer
-    tokenizer = GPT2Tokenizer(os.path.join(args.tokenizer_path, 'vocab.json'), os.path.join(args.tokenizer_path, 'merges.txt'), os.path.join(args.tokenizer_path, 'chinese_vocab.model'))
+    tokenizer = GPT2Tokenizer(os.path.join(args.tokenizer_path, 'vocab.json'), os.path.join(args.tokenizer_path, 'chinese_vocab.model'))
 
     # Model
     model = setup_model(args)

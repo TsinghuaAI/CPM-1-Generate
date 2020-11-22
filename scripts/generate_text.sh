@@ -13,7 +13,7 @@ TEMP=0.9
 TOPK=0
 TOPP=0
 
-python -m torch.distributed.launch --nproc_per_node 2 generate_samples.py \
+CMD="python -m torch.distributed.launch --nproc_per_node 2 generate_samples.py \
        --model-parallel-size $MPSIZE \
        --num-layers $NLAYERS \
        --hidden-size $NHIDDEN \
@@ -28,5 +28,10 @@ python -m torch.distributed.launch --nproc_per_node 2 generate_samples.py \
        --top_k $TOPK \
        --top_p $TOPP \
        --tokenizer-path bpe_3w_new/ \
-       --vocab-size 30000 
+       --vocab-size 30000 "
+       
+if [ ! -z $2 ]; then
+    CMD+="--input-text $2"
+fi
 
+$CMD

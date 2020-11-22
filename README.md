@@ -40,7 +40,23 @@ ffb39d8e477aedf9f8714cc467f34eae  80000/mp_rank_00_model_states.pt
 ```
 bash scripts/generate_text.sh /path/to/CPM
 ```
-运行该脚本需要两块GPU，每张卡的GPU内存占用约为7GB。该项目主要基于 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 进行修改。
+如不使用交互式输入，可增加第二个参数，告知输入文本的位置
+```
+bash scripts/generate_text.sh /path/to/CPM example.txt
+```
+运行该脚本需要两块GPU，每张卡的GPU内存占用约为7GB。该项目主要基于 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 进行修改。模型的主体架构与GPT-2一致。
+
+## Tokenization
+
+Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进行分词，再使用 SentencePiece 得到 BPE 的结果。由于 SentencePiece 不能有效编码空格和换行符，在 BPE 之前，我们将文本中的空格和换行符替换为`\u2582`和`\u2583`。生成文本的时候也会对应的把生成的`\u2582`和`\u2583`替换回空格和换行符。
+
+## TODO
+
+- 实验环境的docker镜像
+- 提供各个任务具体的使用模板
+- 公开技术报告
+- 开源实验中使用的小规模模型参数
+- Fine-tune代码
 
 ## 引用
 

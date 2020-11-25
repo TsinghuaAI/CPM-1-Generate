@@ -50,6 +50,8 @@ bash scripts/generate_text.sh /path/to/CPM example.txt
 
 Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进行分词，再使用 SentencePiece 得到 BPE 的结果。由于 SentencePiece 不能有效编码空格和换行符，在 BPE 之前，我们将文本中的空格和换行符替换为`\u2582`和`\u2583`。生成文本的时候也会对应的把生成的`\u2582`和`\u2583`替换回空格和换行符。
 
+对应 [问题](https://kexue.fm/archives/7912) 已解决。
+
 ## TODO
 
 - 实验环境的docker镜像

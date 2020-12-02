@@ -1,6 +1,6 @@
 # CPM-Generate
 
-为了促进中文自然语言处理研究的发展，本项目提供了 **CPM-LM** (2.6B) 模型的文本生成代码，可用于文本生成的本地测试，并以此为基础进一步研究零次学习/少次学习等场景。[[项目首页](https://cpm.baai.ac.cn)] [[模型下载](https://cpm.baai.ac.cn/download.html)] 
+为了促进中文自然语言处理研究的发展，本项目提供了 **CPM-LM** (2.6B) 模型的文本生成代码，可用于文本生成的本地测试，并以此为基础进一步研究零次学习/少次学习等场景。[[项目首页](https://cpm.baai.ac.cn)] [[模型下载](https://cpm.baai.ac.cn/download.html)] [[技术报告](https://arxiv.org/abs/2012.00413)]
 
 ## 安装
 
@@ -65,7 +65,7 @@ Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进
 ```
 @article{cpm-v1,
   title={CPM: A Large-scale Generative Chinese Pre-trained Language Model},
-  author={Zhang, Zhengyan and Han, Xu, and Zhou, Hao, and Ke, Pei, and Gu, Yuxian and Ye, Deming and Qin, Yujia and Su, Yusheng and Ji, Haozhe and Guan, Jian and Qi, Fanchao and Wang, Xiaozhi and Zheng, Yanan and Cao, Jiannan and Zeng, Guoyang and Cao, Huanqi and Chen, Shengqi and Li, Daixuan and Sun, Zhenbo and Liu, Zhiyuan and Huang, Minlie and Han, Wentao and Tang, Jie and Li, Juanzi and Sun, Maosong},
+  author={Zhang, Zhengyan and Han, Xu, and Zhou, Hao, and Ke, Pei, and Gu, Yuxian and Ye, Deming and Qin, Yujia and Su, Yusheng and Ji, Haozhe and Guan, Jian and Qi, Fanchao and Wang, Xiaozhi and Zheng, Yanan and Zeng, Guoyang and Cao, Huanqi and Chen, Shengqi and Li, Daixuan and Sun, Zhenbo and Liu, Zhiyuan and Huang, Minlie and Han, Wentao and Tang, Jie and Li, Juanzi and Sun, Maosong},
   year={2020}
 }
 ```

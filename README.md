@@ -12,6 +12,16 @@ cd apex
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 ```
 
+考虑apex的安装容易发生问题，我们构建了对应的Docker容器，可以进行快速环境搭建。安装方式如下：
+```
+docker pull dmye/cpm:v0
+```
+参考运行指令如下：
+```
+sudo docker run --gpus '"device=0,1"' -it -v <path>:/CPM  --name=cpm  cpm:v0
+```
+其中`<path>`为代码所在目录，-v进行文件目录挂载
+
 注：感谢hqhuan同学提供了基于TensorFlow的[使用代码](https://github.com/qhduan/CPM-LM-TF2)，用作Pytorch之外的备选。
 
 ## 模型
@@ -27,11 +37,11 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 为保证下载文件的正确性，文件的checksum如下：
 ```
 SHA1
-7a8461098dae374a836f55bf2002bf21cba05964  80000/mp_rank_00_model_states.pt
-6ab97bd06979c1707080b33cfddff4f08c9af675  80000/mp_rank_01_model_states.pt
+71d6b6ad4f47b46724eb82c05da8fb9175e62a7d  80000/mp_rank_00_model_states.pt
+42aa247a262e2011fa5e276f1a8389fad6d80edc  80000/mp_rank_01_model_states.pt
 MD5
-ffb39d8e477aedf9f8714cc467f34eae  80000/mp_rank_00_model_states.pt
-8af02c1aa85e76a430d45f3ad073edc5  80000/mp_rank_01_model_states.pt
+f3f6d2f7d84c6a45290a31dabf79ddac  80000/mp_rank_00_model_states.pt
+b0e960be4b5226e759ae6fc5246f9160  80000/mp_rank_01_model_states.pt
 ```
 
 ## 使用
@@ -54,9 +64,9 @@ Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进
 
 ## TODO
 
-- 实验环境的docker镜像
-- 提供各个任务具体的使用模板
-- 公开技术报告
+- ~~实验环境的docker镜像~~
+- ~~提供各个任务具体的使用模板~~
+- ~~公开技术报告~~
 - 开源实验中使用的小规模模型参数
 - Fine-tune代码
 

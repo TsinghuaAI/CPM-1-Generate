@@ -56,6 +56,12 @@ bash scripts/generate_text.sh /path/to/CPM example.txt
 ```
 运行该脚本需要两块GPU，每张卡的GPU内存占用约为7GB。该项目主要基于 [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) 进行修改。模型的主体架构与GPT-2一致。
 
+默认的模型并行参数为2，如果需要修改，可以使用`change_mp.py`，并调整`generate_text.sh`中的`MPSIZE`。`change_mp.py`的使用示例如下：
+```
+python change_mp.py /path/to/CPM MPSIZE
+```
+这里的`/path/to/CPM`为模型路径，`MPSIZE`为一个整数，可以为1或者2的倍数，结果会生成一个新的模型，存储路径为`/path/to/CPM_MPSIZE`。
+
 ## Tokenization
 
 Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进行分词，再使用 SentencePiece 得到 BPE 的结果。由于 SentencePiece 不能有效编码空格和换行符，在 BPE 之前，我们将文本中的空格和换行符替换为`\u2582`和`\u2583`。生成文本的时候也会对应的把生成的`\u2582`和`\u2583`替换回空格和换行符。
@@ -67,8 +73,9 @@ Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进
 - ~~实验环境的docker镜像~~
 - ~~提供各个任务具体的使用模板~~
 - ~~公开技术报告~~
+- ~~模型并行数可动态调整~~
+- ~~Fine-tune代码~~
 - 开源实验中使用的小规模模型参数
-- Fine-tune代码
 
 ## 引用
 

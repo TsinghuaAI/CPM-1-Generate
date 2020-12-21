@@ -79,10 +79,10 @@ if target_mp > len(filenames):
                 if len(v.shape) == 2 and 'position' not in k:
                     if 'word' in k or 'query' in k or 'h_to_4h' in k:
                         part = v.shape[0] // ratio
-                        d_new['module'][k] = v[shift*part:(shift+1)*part, :]
+                        d_new['module'][k] = v[shift*part:(shift+1)*part, :].clone()
                     else:
                         part = v.shape[1] // ratio
-                        d_new['module'][k] = v[:, shift*part:(shift+1)*part]
+                        d_new['module'][k] = v[:, shift*part:(shift+1)*part].clone()
                 else:
                     d_new['module'][k] = v
 

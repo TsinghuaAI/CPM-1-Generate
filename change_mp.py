@@ -121,7 +121,7 @@ if target_mp > len(filenames):
             for k, v in d['module'].items():
                 assert len(v.shape) < 3
                 if len(v.shape) == 2 and 'position' not in k:
-                    if 'query_key_value' in k:
+                    if 'query' in k:
                         part = v.shape[0] // ratio // 3
                         d_new['module'][k] = torch.cat([v[shift*part:(shift+1)*part, :], v[(shift+ratio)*part:(shift+1+ratio)*part, :], v[(shift+2*ratio)*part:(shift+1+2*ratio)*part, :]], 0)
                     elif 'word' in k or 'h_to_4h' in k:
@@ -130,12 +130,12 @@ if target_mp > len(filenames):
                     else:
                         part = v.shape[1] // ratio
                         d_new['module'][k] = v[:, shift*part:(shift+1)*part]
-                # elif len(v.shape) == 1 and 'dense_h_to_4h' in k:
-                #     part = v.shape[0] // ratio
-                #     d_new['module'][k] = v[shift*part:(shift+1)*part]
-                # elif len(v.shape) == 1 and 'query_key_value' in k:
-                #     part = v.shape[0] // ratio // 3
-                #     d_new['module'][k] = torch.cat([v[shift*part:(shift+1)*part], v[(shift+ratio)*part:(shift+1+ratio)*part], v[(shift+2*ratio)*part:(shift+1+2*ratio)*part]], 0)
+                elif len(v.shape) == 1 and 'dense_h_to_4h' in k:
+                    part = v.shape[0] // ratio
+                    d_new['module'][k] = v[shift*part:(shift+1)*part]
+                elif len(v.shape) == 1 and 'query_key_value' in k:
+                    part = v.shape[0] // ratio // 3
+                    d_new['module'][k] = torch.cat([v[shift*part:(shift+1)*part], v[(shift+ratio)*part:(shift+1+ratio)*part], v[(shift+2*ratio)*part:(shift+1+2*ratio)*part]], 0)
                 else:
                     d_new['module'][k] = v
             filename = os.path.join(new_checkpoint, "mp_rank_{:02d}_model_states.pt".format(j))

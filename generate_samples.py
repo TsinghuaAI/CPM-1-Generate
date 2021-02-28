@@ -309,7 +309,7 @@ def get_model(args):
                       max_sequence_length=args.max_position_embeddings,
                       checkpoint_activations=args.checkpoint_activations,
                       checkpoint_num_layers=args.checkpoint_num_layers,
-                      parallel_output=False)
+                      parallel_output=args.parallel_output)
 
     if mpu.get_data_parallel_rank() == 0:
         print(' > number of parameters on model parallel rank {}: {}'.format(
@@ -367,6 +367,7 @@ def main():
     tokenizer = GPT2Tokenizer(os.path.join(args.tokenizer_path, 'vocab.json'), os.path.join(args.tokenizer_path, 'chinese_vocab.model'))
 
     # Model
+    args.parallel_output = False
     model = setup_model(args)
 
     #setting default batch size to 1

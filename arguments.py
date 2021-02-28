@@ -204,6 +204,8 @@ def add_evaluation_args(parser):
     group.add_argument('--load-openai', action='store_true',
                        help='load openai weights into our model. Use `--load` '
                        'to specify weights path to be loaded')
+    group.add_argument('--eval-data-path', type=str, default=None)
+    group.add_argument('--task', type=str, default=None)
 
     return parser
 

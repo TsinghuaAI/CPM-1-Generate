@@ -68,6 +68,18 @@ Tokenization实现主要在`data_util/tokenization_gpt2.py`，先对于文本进
 
 对应[问题](https://kexue.fm/archives/7912)已解决。
 
+## 分类任务零次学习（Zero-shot Learning）
+
+提供了三个任务的零次学习任务脚本以供参考，包括OCNLI、TNEWS和IFLYTEK，[数据下载链接](https://github.com/CLUEbenchmark/CLUE)。脚本使用方法如下：
+```
+# OCNLI
+bash scripts/zero-shot-ocnli.sh /path/to/CPM /path/to/dataset
+# TNEWS
+bash scripts/zero-shot-tnews.sh /path/to/CPM /path/to/dataset
+# IFLYTEK
+bash scripts/zero-shot-iflytek.sh /path/to/CPM /path/to/dataset
+```
+
 ## TODO
 
 - ~~实验环境的docker镜像~~

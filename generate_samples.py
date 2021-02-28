@@ -232,7 +232,7 @@ def generate_samples(model, tokenizer, args, device):
                     logits = logits[:, 0, :]
                 past_key_values = [x.half() for x in past_key_values]
                 logits = top_k_logits(logits, top_k=args.top_k, top_p=args.top_p)            
-                log_probs = F.softmax(logits, dim=-1)
+                log_probs = F.softmax(logits/args.temperature, dim=-1)
                 prev = torch.multinomial(log_probs, num_samples=1)
                 tokens[0, context_length] = prev[0] 
                 torch.distributed.broadcast(tokens, mpu.get_model_parallel_src_rank(), group=mpu.get_model_parallel_group())

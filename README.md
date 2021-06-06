@@ -22,7 +22,7 @@ sudo docker run --gpus '"device=0,1"' -it -v <path>:/CPM  --name=cpm  cpm:v0
 ```
 其中`<path>`为代码所在目录，-v进行文件目录挂载
 
-注：感谢hqhuan同学提供了基于TensorFlow的[使用代码](https://github.com/qhduan/CPM-LM-TF2)，用作Pytorch之外的备选。
+注：感谢qhduan同学提供了基于TensorFlow的[使用代码](https://github.com/qhduan/CPM-LM-TF2)，用作Pytorch之外的备选。
 
 ## 模型
 

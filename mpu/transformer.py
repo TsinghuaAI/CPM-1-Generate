@@ -126,8 +126,12 @@ class GPT2ParallelSelfAttention(torch.nn.Module):
 
         if layer_past is not None:
             past_key, past_value = layer_past[0], layer_past[1]
-            key_layer = torch.cat((past_key, key_layer), dim=-2).half()
-            value_layer = torch.cat((past_value, value_layer), dim=-2).half()
+            if key_layer.dtype == torch.half:
+                key_layer = torch.cat((past_key, key_layer), dim=-2).half()
+                value_layer = torch.cat((past_value, value_layer), dim=-2).half()
+            else:
+                key_layer = torch.cat((past_key, key_layer), dim=-2)
+                value_layer = torch.cat((past_value, value_layer), dim=-2)
         
 
         if use_cache:

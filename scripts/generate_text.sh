@@ -13,7 +13,7 @@ TEMP=0.9
 TOPK=0
 TOPP=0
 
-CMD="python -m torch.distributed.launch --nproc_per_node 2 generate_samples.py \
+CMD="python -m torch.distributed.launch --nproc_per_node $MPSIZE generate_samples.py \
        --model-parallel-size $MPSIZE \
        --num-layers $NLAYERS \
        --hidden-size $NHIDDEN \

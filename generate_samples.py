@@ -230,10 +230,10 @@ def generate_samples(model, tokenizer, args, device):
                 else:
                     logits, past_key_values = model(tokens[:, context_length - 1 : context_length], position_ids[:, context_length - 1 : context_length], attention_mask[:, :, context_length - 1, :context_length], past_key_values=past_key_values, use_cache=True)
                     logits = logits[:, 0, :]
-		if args.fp16:
+                if args.fp16: 
                     past_key_values = [x.half() for x in past_key_values]
-		else:
-		    past_key_values = [x for x in past_key_values]
+                else:
+                    past_key_values = [x for x in past_key_values]
                 logits = top_k_logits(logits, top_k=args.top_k, top_p=args.top_p)            
                 log_probs = F.softmax(logits/args.temperature, dim=-1)
                 prev = torch.multinomial(log_probs, num_samples=1)

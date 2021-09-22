@@ -25,7 +25,6 @@ CMD="python -m torch.distributed.launch --nproc_per_node 8 zero-shot-cls.py \
        --max-position-embeddings 1024 \
        --fp16 \
        --cache-dir cache \
-       --seq-length 1024 \
        --eval-data-path $2 \
        --tokenizer-path bpe_3w_new/ \
        --vocab-size 30000 \

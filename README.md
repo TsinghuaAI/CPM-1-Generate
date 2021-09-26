@@ -2,6 +2,8 @@
 
 为了促进中文自然语言处理研究的发展，本项目提供了 **CPM-LM** (2.6B) 模型的文本生成代码，可用于文本生成的本地测试，并以此为基础进一步研究零次学习/少次学习等场景。[[项目首页](https://cpm.baai.ac.cn)] [[模型下载](https://cpm.baai.ac.cn/download.html)] [[技术报告](https://arxiv.org/abs/2012.00413)]
 
+**若您想使用CPM-1进行推理，我们建议使用高效推理工具[BMInf](https://github.com/OpenBMB/BMInf)，支持1060以上显卡单卡推理。**
+
 ## 安装
 
 首先安装pytorch等基础依赖，再安装[APEX](https://github.com/NVIDIA/apex#quick-start)以支持fp16：

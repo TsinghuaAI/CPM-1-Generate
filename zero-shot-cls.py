@@ -209,7 +209,7 @@ def load_iflytek_data(data_path, data_type, tokenizer, sampled_labels=False):
         sentence = obj['sentence']
         tokenized_sentence = tokenizer.encode(sentence)[:args.seq_length-20]
 
-        if few_shot:
+        if sampled_labels:
             cur_labels = random.sample(labels, 3)
             while obj['label_des'] in cur_labels:
                 cur_labels = random.sample(labels, 3)
@@ -289,7 +289,7 @@ def load_tnews_data(data_path, data_type, tokenizer, sampled_labels=False):
         tokenized_sentence = tokenizer.encode(sentence)[:args.seq_length-20]
         obj['label_desc'] = label_reverse[obj['label']]
 
-        if few_shot:
+        if sampled_labels:
             cur_labels = random.sample(labels, 3)
             while obj['label_desc'] in cur_labels:
                 cur_labels = random.sample(labels, 3)

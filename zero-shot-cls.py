@@ -182,7 +182,7 @@ def load_ocnli_data(data_path, data_type, tokenizer):
                                        num_workers=num_workers,
                                        pin_memory=True)
 
-def load_iflytek_data(data_path, data_type, tokenizer, few_shot=False):
+def load_iflytek_data(data_path, data_type, tokenizer, sampled_labels=False):
     args = get_args()
 
     filename = os.path.join(data_path, data_type+'.json')
@@ -259,7 +259,7 @@ def load_iflytek_data(data_path, data_type, tokenizer, few_shot=False):
                                        num_workers=num_workers,
                                        pin_memory=True), all_labels
 
-def load_tnews_data(data_path, data_type, tokenizer, few_shot=False):
+def load_tnews_data(data_path, data_type, tokenizer, sampled_labels=False):
     args = get_args()
 
     filename = os.path.join(data_path, data_type+'.json')
@@ -466,10 +466,10 @@ def main():
         dev_dataloader = load_ocnli_data(args.eval_data_path, 'dev', tokenizer)
         evaluate_ocnli(model, dev_dataloader, device, args)
     elif args.task == "iflytek":
-        dev_dataloader, all_labels = load_iflytek_data(args.eval_data_path, 'dev', tokenizer)
+        dev_dataloader, all_labels = load_iflytek_data(args.eval_data_path, 'dev', tokenizer, True)
         evaluate(model, dev_dataloader, all_labels, device, args)
     elif args.task == "tnews":
-        dev_dataloader, all_labels = load_tnews_data(args.eval_data_path, 'dev', tokenizer)
+        dev_dataloader, all_labels = load_tnews_data(args.eval_data_path, 'dev', tokenizer, True)
         evaluate(model, dev_dataloader, all_labels, device, args)
     else:
         print("Unknown task!")

@@ -82,6 +82,8 @@ bash scripts/zero-shot-tnews.sh /path/to/CPM /path/to/dataset
 bash scripts/zero-shot-iflytek.sh /path/to/CPM /path/to/dataset
 ```
 
+如果想要在完整标签数据上进程TNEWS和IFLYTEK评测，需要将加载数据函数（`load_iflytek_data`和`load_tnews_data`）中的`sampled_labels`设置为`True`。
+
 ## TODO
 
 - ~~实验环境的docker镜像~~

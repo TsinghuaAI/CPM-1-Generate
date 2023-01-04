@@ -84,6 +84,12 @@ bash scripts/zero-shot-iflytek.sh /path/to/CPM /path/to/dataset
 
 如果想要在完整标签数据上进程TNEWS和IFLYTEK评测，需要将加载数据函数（`load_iflytek_data`和`load_tnews_data`）中的`sampled_labels`设置为`True`。
 
+## 小规模模型
+
+- [CPM-Distill](https://github.com/TsinghuaAI/CPM-1-Distill) 是 2.6B（26亿）参数 CPM-Large 模型蒸馏版本，参数量为 109M
+
+- [CPM-Generate-distill](https://huggingface.co/mymusise/CPM-Generate-distill) 是`CPM-Distill`的第三方实现，支持`Pytorch` 和`Tensorflow`
+
 ## TODO
 
 - ~~实验环境的docker镜像~~
@@ -91,7 +97,7 @@ bash scripts/zero-shot-iflytek.sh /path/to/CPM /path/to/dataset
 - ~~公开技术报告~~
 - ~~模型并行数可动态调整~~
 - ~~Fine-tune代码~~
-- 开源实验中使用的小规模模型参数
+- ~~开源实验中使用的小规模模型参数~~
 
 ## 引用
 
